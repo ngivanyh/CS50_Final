@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block body %}
+        <div style="text-align: center;">
+            {{ not_found|safe }}
+        </div>
+        <div id="center_div">
+            <form action="/word" method="post" id="word_form">
+                <input id="search" placeholder="Word" name="word" autocomplete="off" autofocus>
+                <button type="submit" class="submit_btn">Search</button>
+            </form>
+        </div>
+<!-- 
+        <script>
+            search_bar = document.getElementById("search")
+            form = document.getElementById("word_form")
+
+            search_bar.addEventListener("keypress", function(e) {
+                if (e.key = "Enter") {
+                    document.form.submit()
+                }
+            })
+        </script> -->
+        <!-- <p id="notfound" style="display: none;">Not Found</p> -->
+        <!-- <div id="word-display">
+            <p id="word" class="text">Word</p>
+            <p id="pos">noun</p>
+            <p id="def" class="text detailedinfo">Definition: Elit eu commodo incididunt duis consequat commodo non duis et pariatur.</p>
+            <p id="sentence" class="text detailedinfo">Sentence: Esse mollit mollit occaecat nostrud ea quis aute nostrud occaecat culpa.</p>
+            <p id="synonyms" class="text detailedinfo">Synonyms: Esse ad dolor tempor id elit ullamco.</p>
+        </div> -->
+        <!-- <script src="script.js"></script> -->
+{% endblock %}

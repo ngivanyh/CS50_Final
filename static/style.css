@@ -1,0 +1,83 @@
+* {
+    font-size: 20px;
+    font-family: "Roboto Mono";
+    font-weight: 400;
+}
+
+body {
+    background-color: #191919;
+    color: #FFFFFF;
+
+}
+
+h5 {
+    color: #D21404;
+    font-weight: 600;
+    margin: 0px;
+}
+
+#center_div {
+    display: flex;
+    justify-content: center;
+}
+
+.submit_btn {
+    height: 20px;
+    padding: 0px;
+    background-color: #191919;
+    color: #FFFFFF;
+    border: none;
+}
+
+#search {
+    text-align: left;
+    width: 305px;
+    height: 20px;
+    background-color: #191919;
+    border: none;
+    margin-bottom: 4px;
+    outline: none;
+    color: #FFFFFF;
+}
+
+.text {
+    margin: 0px;
+}
+
+#pos {
+    font-weight: 200;
+    font-style: italic;
+    margin: 2px;
+}
+
+#word {
+    font-weight: 700;
+    font-size: 30px;
+    margin-top: 0px;
+}
+
+.detailedinfo {
+    margin-bottom: 10px;
+}
+
+#def {
+    margin-top: 14px;
+}
+
+.span-2 {
+    color: #D21404;
+}
+
+.span-3 {
+    color: #0F52BA;
+}
+
+/* span-0 because of ip % 4 */
+.span-0 {
+    color: #028A0F;
+}
+
+#imp {
+    font-weight: 700;
+    margin: 8px;
+}
