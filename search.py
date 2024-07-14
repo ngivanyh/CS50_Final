@@ -71,14 +71,17 @@ def get_word(search_word):
 
     return words
 
-    # for j in range(len(words)):
-    #     if len(words[j]) >= 1:
-    #         for k in range(len(words[j])):
-    #             print("lol")
-    #             syn_search = cur.execute(f'SELECT * FROM syn WHERE Word="{words[j][k][0]}"')
-    #             print(syn_search.fetchall())
-    #             syn.append(syn_search.fetchall())
+def check_none(pos, word):
+    n_check_things = ["pos","definition", "synonyms"]
 
-    # print(words)
-    # print("Buffer line")
-    # print(syn)
+    non_n_check_things = ["pos", "definition", "sentence", "synonyms"]
+    if pos == "noun":
+        for i in range(len(n_check_things)):
+            if word[n_check_things[i]] == "":
+                word[n_check_things[i]] = "None"
+    else:
+        for i in range(len(non_n_check_things)):
+            if word[non_n_check_things[i]] == "":
+                word[non_n_check_things[i]] = "None"
+    
+    return word

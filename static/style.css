@@ -16,6 +16,16 @@ h5 {
     margin: 0px;
 }
 
+#license_footer {
+    text-align: center;
+}
+
+#license {
+    color: white;
+    font-weight: 600;
+    margin: 0px;
+}
+
 #center_div {
     display: flex;
     justify-content: center;

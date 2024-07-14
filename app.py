@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect
 from sqlite3 import *
-from search import get_word
+from search import get_word, check_none
 
 redirects = 0
 
@@ -8,6 +8,9 @@ def merge(word_dict):
     pos_merge, def_merge, sentence_merge, syn_merge = "", "", "", ""
 
     for i in range(len(word_dict)):
+        
+        word_dict[i] = check_none(word_dict[i]["pos"], word_dict[i])
+
         ip = (i + 1)
         if i == 0:
             num = (str(ip) + ". ")

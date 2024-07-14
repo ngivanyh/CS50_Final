@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>MiniDict</title>
+    <title>Dict: {% block title %}{% endblock %}</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/style.css" type="text/css">
@@ -10,6 +10,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100..700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div style="text-align: center;">
+        {{ not_found|safe }}
+    </div>
+    <div id="center_div">
+        <form action="/word" method="post" id="word_form">
+            <input id="search" placeholder="Word" name="word" autocomplete="off" autofocus>
+            <button type="submit" class="submit_btn">Search</button>
+        </form>
+    </div>
     {% block body %}{% endblock %}
 </body>
 </html>

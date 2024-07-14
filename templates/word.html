@@ -1,12 +1,10 @@
 {% extends "layout.html" %}
 
+{% block title %}
+{{ word }}
+{% endblock %}
+
 {% block body %}
-    <div id="center_div">
-        <form action="/back">
-            <button class="submit_btn" type="submit">Back</button>
-        </form>
-        <!-- <textarea id="search" placeholder="Search"></textarea> -->
-    </div>
     <div id="word-display">
         <p id="word" class="text">{{ word }}</p>
         <p id="pos">{{ pos|safe }}</p>
