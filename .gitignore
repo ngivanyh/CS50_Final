@@ -1,0 +1,4 @@
+dict.db
+__pycache__/**
+startserver.sh
+/venv
