@@ -1,4 +1,6 @@
 dict.db
-__pycache__/**
+**/__pycache__
 startserver.sh
 /venv
+flask_session/
+node_modules/
