@@ -26,6 +26,13 @@ h5 {
     margin: 0px;
 }
 
+button {
+    color: white;
+    background-color: #191919;
+    border: none;
+    outline: none;
+}
+
 .center_div {
     display: flex;
     justify-content: center;
@@ -34,9 +41,6 @@ h5 {
 .submit_btn {
     height: 20px;
     padding: 0px;
-    background-color: #191919;
-    color: #FFFFFF;
-    border: none;
 }
 
 .search {
@@ -56,10 +60,6 @@ h5 {
 
 .add_color {
     height: 20px;
-    background-color: #191919;
-    color: white;
-    border: none;
-    outline: none;
 }
 
 .text {

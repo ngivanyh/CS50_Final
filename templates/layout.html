@@ -15,10 +15,11 @@
     </div>
     <div class="center_div">
         <form action="/word" method="post" id="word_form">
-            <input class="search" placeholder="Word" name="word" autocomplete="off" autofocus>
+            <input id="search" class="search" placeholder="Word" name="word" autocomplete="off" autofocus>
             <button type="submit" class="submit_btn">Search</button>
         </form>
     </div>
     {% block body %}{% endblock %}
+    <script src="../static/main.js"></script>
 </body>
 </html>

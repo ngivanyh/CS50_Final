@@ -5,6 +5,11 @@
 {% endblock %}
 
 {% block body %}
+    <div class="center_div">
+        <form action="/back" method="get">
+            <button type="submit">Back</button>
+        </form>
+    </div>
     <div id="word-display">
         <p id="word" class="text">{{ word }}</p>
         <p id="pos">{{ pos|safe }}</p>

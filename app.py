@@ -2,12 +2,17 @@ from flask import Flask, render_template, request, redirect, session
 from sqlite3 import *
 from search import get_word, check_none
 from flask_session import Session
-from string import digits, ascii_letters, ascii_uppercase
+from string import digits, ascii_uppercase
 
 redirects_word = 0
 redirects_color = 0
+colours = 3
+DEFAULT_COLORS = ["#FFFFFF", "#D21404", "#0F52BA"]
+changed_colors = False
 
 def merge(word_dict):
+    global colours
+    global DEFAULT_COLORS
     pos_merge, def_merge, sentence_merge, syn_merge = "", "", "", ""
 
     for i in range(len(word_dict)):
@@ -20,7 +25,12 @@ def merge(word_dict):
         else:
             num = (" " + str(ip) + ". ")
 
-        span = '<span class="span-' + str(ip % 4) + '">'
+        cur_colour = ip % colours
+        cur_colour += 1
+        if not changed_colors:
+            span = '<span style="color: ' + DEFAULT_COLORS[ip % colours] + ';">'
+        else:
+            span = '<span style="color: ' + session["color" + str(cur_colour)] + ';">'
         full = (span + num)
 
         if not (word_dict[i]["pos"] == "noun"):
@@ -69,19 +79,26 @@ def word():
 @app.route("/color", methods=["POST"])
 def colors():
     global redirects_color
-    for i in range(len(request.form)):
+    global colours
+    global changed_colors
+    colours = len(request.form)
+    print(colours)
+    for i in range(colours):
         cur_color_index = "color" + str(i + 1)
         cur_color = request.form.get(cur_color_index)
         if (cur_color[0] != "#") or (not cur_color) or (not len(cur_color) == 7):
+            print("first invalid")
             redirects_color += 1
             return redirect("/")
-        hex_color_check = cur_color[1:]
-        for i in range(7):
-            if (hex_color_check[i] not in digits) or (hex_color_check not in ascii_letters[:6]) or (hex_color_check not in ascii_uppercase[:6]):
-                redirects_color += 1
-                return redirect("/")
+        hex_color_check = cur_color[1:].upper()
+        for i in range(6):
+            if hex_color_check[i] not in ascii_uppercase[:6]:
+                if hex_color_check[i] not in digits:
+                    print("second invalid")
+                    redirects_color += 1
+                    return redirect("/")
         session[cur_color_index] = request.form.get(cur_color_index)
-    print(colors)
+    changed_colors = True
     return redirect("/")
 
 @app.route("/back")
