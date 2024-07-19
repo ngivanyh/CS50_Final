@@ -28,6 +28,7 @@ def merge(word_dict):
 
         cur_colour = ip % colours
         cur_colour += 1
+
         if not changed_colors:
             span = '<span style="color: ' + DEFAULT_COLORS[ip % colours] + ';">'
         else:
@@ -41,8 +42,10 @@ def merge(word_dict):
         def_merge += (full + word_dict[i]["definition"] + "</span><br>")
         syn_split = findall(r"[^;|\s]+", word_dict[i]["synonyms"][0], I | M)
         syn_str = ""
+
         for syn in syn_split:
             syn_str += syn + " "
+
         syn_merge += (full + syn_str + "</span><br>")
 
     return [pos_merge, def_merge, sentence_merge, syn_merge]
@@ -87,19 +90,16 @@ def colors():
     global colours
     global changed_colors
     colours = len(request.form)
-    print(colours)
     for i in range(colours):
         cur_color_index = "color" + str(i + 1)
         cur_color = request.form.get(cur_color_index)
         if (cur_color[0] != "#") or (not cur_color) or (not len(cur_color) == 7):
-            print("first invalid")
             redirects_color += 1
             return redirect("/")
         hex_color_check = cur_color[1:].upper()
         for i in range(6):
             if hex_color_check[i] not in ascii_uppercase[:6]:
                 if hex_color_check[i] not in digits:
-                    print("second invalid")
                     redirects_color += 1
                     return redirect("/")
         session[cur_color_index] = request.form.get(cur_color_index)

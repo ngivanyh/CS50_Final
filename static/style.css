@@ -1,5 +1,5 @@
 * {
-    font-size: 20px;
+    font-size: 24px;
     font-family: "Roboto Mono";
     font-weight: 400;
 }
@@ -7,7 +7,6 @@
 body {
     background-color: #191919;
     color: #FFFFFF;
-
 }
 
 h5 {
@@ -21,7 +20,6 @@ h5 {
 }
 
 #license {
-    color: white;
     font-weight: 600;
     margin: 0px;
 }

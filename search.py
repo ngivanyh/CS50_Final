@@ -7,14 +7,11 @@ def get_word(search_word):
 # search_word = input("Search for word... ")
 
     words = []
-    # syn = []
     temp = []
     search_dbs = ['n', 'adj', 'adv', 'v']
-    found = False
 
     db = connect("./dict.db")
     cur = db.cursor()
-
 
     def return_pos(iter_cnt):
         if iter_cnt == 0: return "noun"
@@ -24,13 +21,11 @@ def get_word(search_word):
 
     def word_dict(word, pos):
         syn_search = cur.execute("SELECT * FROM syn WHERE Word=?", [word[0]]).fetchall()
-        # print(syn_search)
         syn = []
         for i in range(len(syn_search)):
             syn.append(syn_search[i][3])
 
         if pos == "verb" or pos == "adverb":
-            # print("v, adv")
             return {
                 "word": word[0],
                 "pos": pos,
@@ -39,7 +34,6 @@ def get_word(search_word):
                 "synonyms": syn,
             }
         elif pos == "noun":
-            # print("n")
             return {
                 "word": word[0],
                 "pos": pos,
@@ -47,7 +41,6 @@ def get_word(search_word):
                 "synonyms": syn,
             }
         elif pos == "adjective":
-            # print("adj")
             return {
                 "word": word[0],
                 "pos": pos,
@@ -56,17 +49,13 @@ def get_word(search_word):
                 "synonyms": syn,
             }
 
-
-
     for i in range(len(search_dbs)):
         pos = return_pos(i)
-        search = cur.execute(f'SELECT * FROM {search_dbs[i]} WHERE Word=?', [search_word])
-        temp.append(search.fetchall())
+        search = cur.execute("SELECT * FROM ? WHERE Word=?", [search_dbs[i], search_word]).fetchall()
+        temp.append(search)
         if len(temp[i]) == 0: pass
         else: 
-            # print("multi-meaning")
             for l in range(len(temp[i])):
-                # print(temp[i][l], pos)
                 words.append(word_dict(temp[i][l], pos))
 
     return words
