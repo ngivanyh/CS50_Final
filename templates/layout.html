@@ -11,7 +11,7 @@
 </head>
 <body>
     <div style="text-align: center;">
-        {{ not_found|safe }}
+        {{ not_found|safe }}    
     </div>
     <div class="center_div">
         <form action="/word" method="post" id="word_form">
@@ -20,6 +20,5 @@
         </form>
     </div>
     {% block body %}{% endblock %}
-    <script src="../static/main.js"></script>
 </body>
 </html>

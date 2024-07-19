@@ -3,7 +3,7 @@ let color_form = document.getElementById("color_form");
 
 let submit_btn = '<button type="submit" class="add_color">Change color settings</button>';
 
-let color_cnt = 3
+let color_cnt = 4
 
 function add_color() {
     color_cnt += 1;

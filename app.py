@@ -3,11 +3,12 @@ from sqlite3 import *
 from search import get_word, check_none
 from flask_session import Session
 from string import digits, ascii_uppercase
+from re import findall, M, I
 
 redirects_word = 0
 redirects_color = 0
-colours = 3
-DEFAULT_COLORS = ["#FFFFFF", "#D21404", "#0F52BA"]
+colours = 4
+DEFAULT_COLORS = ["#FFFFFF", "#D21404", "#0F52BA", "#028A0F"]
 changed_colors = False
 
 def merge(word_dict):
@@ -38,7 +39,11 @@ def merge(word_dict):
 
         pos_merge += (full + word_dict[i]["pos"] + "</span>")
         def_merge += (full + word_dict[i]["definition"] + "</span><br>")
-        syn_merge += (full + word_dict[i]["synonyms"][0] + "</span><br>")
+        syn_split = findall(r"[^;|\s]+", word_dict[i]["synonyms"][0], I | M)
+        syn_str = ""
+        for syn in syn_split:
+            syn_str += syn + " "
+        syn_merge += (full + syn_str + "</span><br>")
 
     return [pos_merge, def_merge, sentence_merge, syn_merge]
 

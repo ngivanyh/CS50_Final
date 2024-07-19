@@ -86,19 +86,6 @@ button {
     margin-top: 14px;
 }
 
-.span-2 {
-    color: #D21404;
-}
-
-.span-3 {
-    color: #0F52BA;
-}
-
-/* span-0 because of ip % 4 */
-.span-0 {
-    color: #028A0F;
-}
-
 #imp {
     font-weight: 700;
     margin: 8px;
