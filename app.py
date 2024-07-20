@@ -2,10 +2,10 @@ from flask import Flask, render_template, request, redirect, session
 from search import get_word, check_none
 from flask_session import Session
 from re import findall, M, I
+from string import digits
 
 # redirects_word = 0
 # redirects_color = 0
-colours = 4
 DEFAULT_COLORS = ["#FFFFFF", "#D21404", "#0F52BA", "#028A0F"]
 
 app = Flask(__name__)
@@ -15,7 +15,6 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 def merge(word_dict):
-    global colours
     global DEFAULT_COLORS
     pos_merge, def_merge, sentence_merge, syn_merge = "", "", "", ""
 
@@ -29,7 +28,7 @@ def merge(word_dict):
         else:
             num = (" " + str(ip) + ". ")
 
-        cur_colour = i % colours
+        cur_colour = i % get_colors()
         print(cur_colour)
 
         if "color1" not in session:
@@ -53,11 +52,12 @@ def merge(word_dict):
 
     return [pos_merge, def_merge, sentence_merge, syn_merge]
 
+def get_colors():
+    return len(session)
+
 @app.route("/")
 def index():
-    global colours
-    
-    return render_template("index.html", colours=colours)
+    return render_template("index.html", colours=get_colors())
 
 @app.route("/word", methods=["POST"])
 def word():
@@ -82,12 +82,10 @@ def word():
 @app.route("/color", methods=["POST"])
 def colors():
     global redirects_color
-    global colours
-    colours = len(request.form)
 
     print(request.form)
 
-    for i in range(colours):
+    for i in range(len(request.form)):
         cur_color_index = "color" + str(i + 1)
         cur_color = request.form.get(cur_color_index)
         if cur_color[0] != "#":
