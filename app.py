@@ -1,15 +1,18 @@
 from flask import Flask, render_template, request, redirect, session
-from sqlite3 import *
 from search import get_word, check_none
 from flask_session import Session
-from string import digits, ascii_uppercase
 from re import findall, M, I
 
-redirects_word = 0
-redirects_color = 0
+# redirects_word = 0
+# redirects_color = 0
 colours = 4
 DEFAULT_COLORS = ["#FFFFFF", "#D21404", "#0F52BA", "#028A0F"]
-changed_colors = False
+
+app = Flask(__name__)
+
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
 
 def merge(word_dict):
     global colours
@@ -26,13 +29,13 @@ def merge(word_dict):
         else:
             num = (" " + str(ip) + ". ")
 
-        cur_colour = ip % colours
-        cur_colour += 1
+        cur_colour = i % colours
+        print(cur_colour)
 
-        if not changed_colors:
-            span = '<span style="color: ' + DEFAULT_COLORS[ip % colours] + ';">'
+        if "color1" not in session:
+            span = '<span style="color: ' + DEFAULT_COLORS[cur_colour] + ';">'
         else:
-            span = '<span style="color: ' + session["color" + str(cur_colour)] + ';">'
+            span = '<span style="color: ' + session["color" + str(cur_colour + 1)] + ';">'
         full = (span + num)
 
         if not (word_dict[i]["pos"] == "noun"):
@@ -50,20 +53,11 @@ def merge(word_dict):
 
     return [pos_merge, def_merge, sentence_merge, syn_merge]
 
-app = Flask(__name__)
-
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
-
 @app.route("/")
 def index():
-    if redirects_word > 0:
-        return render_template("index.html", not_found="<h5>Not a word!</h5>")
-    elif redirects_color > 0:
-        return render_template("index.html", not_found="<h5>Invalid Color!</h5>")
-    else:
-        return render_template("index.html", not_found="")
+    global colours
+    
+    return render_template("index.html", colours=colours)
 
 @app.route("/word", methods=["POST"])
 def word():
@@ -73,12 +67,13 @@ def word():
     word = request.form.get("word").lower()
 
     if not word:
-        redirects_word += 1
+        # redirects_word += 1
+        # # session["redirects_word"] = 1
         return redirect("/")
     
     res = get_word(word)
     if res == []:
-        redirects_word += 1
+        # redirects_word += 1
         return redirect("/")
     else:
         merge_res = merge(res)
@@ -88,22 +83,17 @@ def word():
 def colors():
     global redirects_color
     global colours
-    global changed_colors
     colours = len(request.form)
+
+    print(request.form)
+
     for i in range(colours):
         cur_color_index = "color" + str(i + 1)
         cur_color = request.form.get(cur_color_index)
-        if (cur_color[0] != "#") or (not cur_color) or (not len(cur_color) == 7):
-            redirects_color += 1
+        if cur_color[0] != "#":
+            # redirects_color += 1
             return redirect("/")
-        hex_color_check = cur_color[1:].upper()
-        for i in range(6):
-            if hex_color_check[i] not in ascii_uppercase[:6]:
-                if hex_color_check[i] not in digits:
-                    redirects_color += 1
-                    return redirect("/")
         session[cur_color_index] = request.form.get(cur_color_index)
-    changed_colors = True
     return redirect("/")
 
 @app.route("/back")

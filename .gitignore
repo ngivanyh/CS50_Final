@@ -3,4 +3,3 @@ dict.db
 startserver.sh
 /venv
 flask_session/
-node_modules/

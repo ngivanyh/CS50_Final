@@ -7,10 +7,17 @@ Home
 {% block body %}
     <div class="center_div">
         <form action="/color" method="post" id="color_form">
-            <input type="text" name="color1" class="search longer" placeholder="Color 1 (Enter hex values)" autocomplete="off"><br>
-            <input type="text" name="color2" class="search longer" placeholder="Color 2 (Enter hex values)" autocomplete="off"><br>
-            <input type="text" name="color3" class="search longer" placeholder="Color 3 (Enter hex values)" autocomplete="off"><br>
-            <input type="text" name="color4" class="search longer" placeholder="Color 4 (Enter hex values)" autocomplete="off"><br>
+            {% if not session["color1"] %}
+                    <input type="color" name="color1" class="search longer" autocomplete="off" value="#FFFFFF"><br>
+                    <input type="color" name="color2" class="search longer" autocomplete="off" value="#D21404"><br>
+                    <input type="color" name="color3" class="search longer" autocomplete="off" value="#0F52BA"><br>
+                    <input type="color" name="color4" class="search longer" autocomplete="off" value="#028A0F"><br>
+            {% else %}
+                {% for i in range(colours) %}
+                    {% set color_id = "color" + ((i + 1)|string) %}
+                    <input type="color" name={{ color_id }} class="search longer" autocomplete="off" value={{ session[color_id] }}><br>
+                {% endfor %}
+            {% endif %}
             <button type="submit" class="add_color">Change color settings</button>
         </form>
         <button id="add_btn" class="add_color">Add a color</button>

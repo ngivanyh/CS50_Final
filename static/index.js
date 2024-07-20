@@ -9,7 +9,7 @@ function add_color() {
     color_cnt += 1;
     console.log(color_cnt)
     let color_form_inner = color_form.innerHTML;
-    let color_btn = `<input type="text" name="color${color_cnt}" class="search longer" placeholder="Color ${color_cnt} (Enter hex values)"><br>`;
+    let color_btn = `<input type="color" name="color${color_cnt}" class="search longer"><br>`;
     color_form_inner = color_form_inner.replace(submit_btn, color_btn + submit_btn);
     color_form.innerHTML = color_form_inner;
 }
