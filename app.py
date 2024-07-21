@@ -1,11 +1,9 @@
 from flask import Flask, render_template, request, redirect, session
-from search import get_word, check_none
+from scripts.search import get_word, check_none
+from scripts.helpers import specified_color
 from flask_session import Session
 from re import findall, M, I
-from string import digits
 
-# redirects_word = 0
-# redirects_color = 0
 DEFAULT_COLORS = ["#FFFFFF", "#D21404", "#0F52BA", "#028A0F"]
 
 app = Flask(__name__)
@@ -17,6 +15,7 @@ Session(app)
 def merge(word_dict):
     global DEFAULT_COLORS
     pos_merge, def_merge, sentence_merge, syn_merge = "", "", "", ""
+    span_br = "</span><br>"
 
     for i in range(len(word_dict)):
         
@@ -31,24 +30,25 @@ def merge(word_dict):
         cur_colour = i % get_colors()
         print(cur_colour)
 
-        if "color1" not in session:
-            span = '<span style="color: ' + DEFAULT_COLORS[cur_colour] + ';">'
-        else:
-            span = '<span style="color: ' + session["color" + str(cur_colour + 1)] + ';">'
+        span = specified_color(False, "color1" not in session, DEFAULT_COLORS, cur_colour, session)
         full = (span + num)
 
         if not (word_dict[i]["pos"] == "noun"):
-            sentence_merge += (full + word_dict[i]["sentence"] + "</span><br>")
+            sentence_merge += (full + word_dict[i]["sentence"] + span_br)
 
         pos_merge += (full + word_dict[i]["pos"] + "</span>")
-        def_merge += (full + word_dict[i]["definition"] + "</span><br>")
-        syn_split = findall(r"[^;|\s]+", word_dict[i]["synonyms"][0], I | M)
+        def_merge += (full + word_dict[i]["definition"] + span_br)
+
+    for j in range(len(word_dict[0]["synonyms"])):
+        syn_split = findall(r"[^;|\s]+", word_dict[0]["synonyms"][j], I | M)
         syn_str = ""
 
         for syn in syn_split:
             syn_str += syn + " "
 
-        syn_merge += (full + syn_str + "</span><br>")
+        span = specified_color(True, "color1" not in session, DEFAULT_COLORS, cur_colour, session)
+
+        syn_merge += (span + syn_str + span_br)
 
     return [pos_merge, def_merge, sentence_merge, syn_merge]
 
