@@ -8,10 +8,10 @@ Home
     <div class="center_div">
         <form action="/color" method="post" id="color_form">
             {% if not session["color1"] %}
-                    <input type="color" name="color1" class="search longer" autocomplete="off" value="#FFFFFF"><br>
-                    <input type="color" name="color2" class="search longer" autocomplete="off" value="#D21404"><br>
-                    <input type="color" name="color3" class="search longer" autocomplete="off" value="#0F52BA"><br>
-                    <input type="color" name="color4" class="search longer" autocomplete="off" value="#028A0F"><br>
+                <input type="color" name="color1" class="search longer" autocomplete="off" value="#FFFFFF"><br>
+                <input type="color" name="color2" class="search longer" autocomplete="off" value="#D21404"><br>
+                <input type="color" name="color3" class="search longer" autocomplete="off" value="#0F52BA"><br>
+                <input type="color" name="color4" class="search longer" autocomplete="off" value="#028A0F"><br>
             {% else %}
                 {% for i in range(colours) %}
                     {% set color_id = "color" + ((i + 1)|string) %}
@@ -21,6 +21,12 @@ Home
             <button type="submit" class="add_color">Change color settings</button>
         </form>
         <button id="add_btn" class="add_color">Add a color</button>
+    </div>
+    <div class="center_div">
+        <form action="/word_of_the_day" method="post">
+            <h5>{{ question }}</h5>
+            <ul></ul>
+        </form>
     </div>
     <footer id="license_footer">
         <details>

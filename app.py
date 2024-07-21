@@ -27,7 +27,11 @@ def merge(word_dict):
         else:
             num = (" " + str(ip) + ". ")
 
-        cur_colour = i % get_colors()
+        if get_colors() == 0:
+            cur_colour = i % len(DEFAULT_COLORS)
+        else:
+            cur_colour = i % get_colors()
+            
         print(cur_colour)
 
         span = specified_color(False, "color1" not in session, DEFAULT_COLORS, cur_colour, session)
@@ -46,7 +50,7 @@ def merge(word_dict):
         for syn in syn_split:
             syn_str += syn + " "
 
-        span = specified_color(True, "color1" not in session, DEFAULT_COLORS, cur_colour, session)
+        span = specified_color(True, "color1" not in session, DEFAULT_COLORS, 0, session)
 
         syn_merge += (span + syn_str + span_br)
 
@@ -67,13 +71,10 @@ def word():
     word = request.form.get("word").lower()
 
     if not word:
-        # redirects_word += 1
-        # # session["redirects_word"] = 1
         return redirect("/")
     
     res = get_word(word)
     if res == []:
-        # redirects_word += 1
         return redirect("/")
     else:
         merge_res = merge(res)
