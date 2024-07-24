@@ -7,7 +7,6 @@ let color_cnt = 4
 
 function add_color() {
     color_cnt += 1;
-    console.log(color_cnt)
     let color_form_inner = color_form.innerHTML;
     let color_btn = `<input type="color" name="color${color_cnt}" class="search longer" value="#FFFFFF"><br>`;
     color_form_inner = color_form_inner.replace(submit_btn, color_btn + submit_btn);
