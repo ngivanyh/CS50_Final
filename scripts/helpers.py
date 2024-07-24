@@ -1,5 +1,6 @@
 from sqlite3 import *
 from datetime import datetime
+# from scripts.search import wotd_question
 
 db = connect("./dict.db", isolation_level=None)
 cur = db.cursor()
@@ -22,4 +23,5 @@ def specified_color(is_syn, check_arg, default_colors, index, session):
 
 def wotd(): # Word of the Day
     has_wotd = cur.execute("SELECT * FROM word_of_the_day WHERE date=?", [datetime.now().strftime("%Y-%m-%d")]).fetchall() == []
+    
     print(has_wotd)

@@ -1,14 +1,17 @@
 from sqlite3 import *
+from random import randint, shuffle
+from re import findall, I, M
 
 '''WordNet Release 3.0 This software and database is being provided to you, the LICENSEE, by Princeton University under the following license. By obtaining, using and/or copying this software and database, you agree that you have read, understood, and will comply with these terms and conditions.: Permission to use, copy, modify and distribute this software and database and its documentation for any purpose and without fee or royalty is hereby granted, provided that you agree to comply with the following copyright notice and statements, including the disclaimer, and that the same appear on ALL copies of the software, database and documentation, including modifications that you make for internal use or for distribution. WordNet 3.0 Copyright 2006 by Princeton University. All rights reserved. THIS SOFTWARE AND DATABASE IS PROVIDED "AS IS" AND PRINCETON UNIVERSITY MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED. BY WAY OF EXAMPLE, BUT NOT LIMITATION, PRINCETON UNIVERSITY MAKES NO REPRESENTATIONS OR WARRANTIES OF MERCHANT- ABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE LICENSED SOFTWARE, DATABASE OR DOCUMENTATION WILL NOT INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS. The name of Princeton University or Princeton may not be used in advertising or publicity pertaining to distribution of the software and/or database. Title to copyright in this software, database and any associated documentation shall at all times remain with Princeton University and LICENSEE agrees to preserve same.'''
 
-def get_word(search_word):
-    words = []
-    temp = []
-    search_dbs = ['n', 'adj', 'adv', 'v']
+search_dbs = ['n', 'adj', 'adv', 'v']
 
+
+def get_word(search_word):
+    global search_dbs
     db = connect("./dict.db")
     cur = db.cursor()
+    words = []; temp = []
 
     def return_pos(iter_cnt):
         if iter_cnt == 0: return "noun"
@@ -71,3 +74,37 @@ def check_none(pos, word):
                 word[non_n_check_things[i]] = "None (Blank from database)"
     
     return word
+
+def wotd_question():
+    db = connect("./dict.db")
+    cur = db.cursor()
+    global search_dbs
+    q_type = search_dbs[randint(0, (len(search_dbs) - 1))]
+
+    q = {}
+
+    q_type = "syn"
+    if q_type == "syn":
+        all_syn = cur.execute("SELECT * FROM syn;").fetchall()
+        q_syn = all_syn[randint(0, (len(all_syn) - 1))]
+
+        ans_options = findall(r"[^;|\s]+", q_syn[len(q_syn) - 1], I | M)
+
+        ans = ans_options[randint(0, len(ans_options) - 1)]
+        print(ans)
+
+        ans_list = []
+
+        for _ in range(4):
+            temp = cur.execute("SELECT Word FROM syn;").fetchall()
+            temp = temp[randint(0, len(temp))][0]
+            if temp not in ans_list:
+                ans_list.append(temp)
+        ans_list.append(ans)
+        shuffle(ans_list)
+        print(ans_list)
+        q.update({"question": f"What is one of the synonyms for the word or phrase '{q_syn[0]}'"})
+
+        for i in range(len(ans_list)):
+            q.update({chr(ord("A") + i): ans_list[i]})
+    print(q)
