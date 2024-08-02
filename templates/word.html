@@ -7,7 +7,7 @@
 {% block body %}
     <div class="center_div">
         <form action="/back" method="get">
-            <button type="submit">Back</button>
+            <button type="submit"><- Back</button>
         </form>
     </div>
     <div id="word-display">
@@ -17,5 +17,4 @@
         <p id="sentence" class="text detailedinfo"><p id="imp">Sentence:</p> {{ sentence|safe }}</p>
         <p id="synonyms" class="text detailedinfo"><p id="imp">Synonyms:</p> {{ syn|safe }}</p>
     </div>
-    <!-- <form action="/syn_count" method="post"><input type="number" placeholder="Max Synonyms" min="1" class="search"></form> -->
 {% endblock %}

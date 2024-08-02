@@ -1,12 +1,17 @@
 from flask import Flask, render_template, request, redirect, session
 from scripts.search import get_word, check_none
-from scripts.helpers import specified_color
+from scripts.helpers import specified_color, wotd_gen
 from flask_session import Session
 from re import findall, M, I
+from sqlite3 import *
+from datetime import datetime
 
 DEFAULT_COLORS = ["#FFFFFF", "#D21404", "#0F52BA", "#028A0F"]
 
 app = Flask(__name__)
+
+app.jinja_env.filters["ord"] = ord # ord() function
+app.jinja_env.filters["chr"] = chr # ord() function
 
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -56,17 +61,24 @@ def merge(word_dict):
 
 def get_colors():
     colors = 0
-
+    print(session)
     for key in session.keys():
+        print(key)
         if key[:5] == "color":
-            try:
-                if type(int(key[5:])) == int: colors += 1
-            except ValueError: pass
+            colors += 1
 
     return colors
+
 @app.route("/")
 def index():
-    return render_template("index.html", colours=get_colors())
+    db = connect("./dict.db")
+    cur = db.cursor()
+    
+    wotd_q = wotd_gen()
+    question = wotd_q[5]
+    options = wotd_q[1:5] # 4 + 1 because of python's list slicing being [x:y-1]
+
+    return render_template("index.html", colours=get_colors(), question=question, options=options, default_colors=DEFAULT_COLORS)
 
 @app.route("/word", methods=["POST"])
 def word():
@@ -98,6 +110,47 @@ def colors():
             return redirect("/")
         session[cur_color_index] = request.form.get(cur_color_index)
     return redirect("/")
+
+@app.route("/wotd", methods=["POST"])
+def wotd():
+    print("hello")
+    usr_ans = request.form.get("wotd_answer")
+    print(usr_ans)
+    session["wotd_answer"] = usr_ans
+    if (not usr_ans) or (usr_ans not in ["A", "B", "C", "D"]):
+        return redirect("/")
+    
+    db = connect("./dict.db", isolation_level=None)
+    cur = db.cursor()
+
+    usr_ans_type = usr_ans.lower() + '_ans'
+    print(usr_ans_type)
+    cur.execute(f"UPDATE wotd SET {usr_ans_type}=? WHERE date=?", [(cur.execute(f"SELECT {usr_ans_type} FROM wotd").fetchall()[0][0]) + 1, datetime.now().strftime("%Y-%m-%d")])
+    cur.execute(f"UPDATE wotd SET total_ans=? WHERE date=?", [(cur.execute("SELECT total_ans FROM wotd").fetchall()[0][0]) + 1, datetime.now().strftime("%Y-%m-%d")])
+    
+    return redirect("/wotd_overview")
+
+@app.route("/wotd_overview")
+def wotd_overview():
+    db = connect("./dict.db")
+    cur = db.cursor()
+
+    word = cur.execute("SELECT question FROM wotd WHERE date=?;", [datetime.now().strftime("%Y-%m-%d")]).fetchall()
+    word = word[0][0]
+
+    if session["wotd_answer"] == cur.execute("SELECT answer FROM wotd WHERE date=?;", [datetime.now().strftime("%Y-%m-%d")]).fetchall()[0][0]:
+        msg = "<h5>Congratulations, you got the Word of the Day question correct!</h5>"
+    else:
+        msg = "<h5>Unlucky, get it right next time.</h5>"
+
+
+    wotd_word = findall(r"[a-zA-z]+", word, I | M)
+    wotd_word = wotd_word[len(wotd_word) - 1]
+    
+    res = get_word(wotd_word)
+    merge_res = merge(res)
+    
+    return render_template("wotd.html", word=word, msg=msg, wotd_word=wotd_word, pos=merge_res[0], definition=merge_res[1], sentence=merge_res[2], syn=merge_res[3])
 
 @app.route("/back")
 def back():

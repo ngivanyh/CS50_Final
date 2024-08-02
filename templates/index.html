@@ -8,10 +8,9 @@ Home
     <div class="center_div">
         <form action="/color" method="post" id="color_form">
             {% if not session["color1"] %}
-                <input type="color" name="color1" class="search longer" autocomplete="off" value="#FFFFFF"><br>
-                <input type="color" name="color2" class="search longer" autocomplete="off" value="#D21404"><br>
-                <input type="color" name="color3" class="search longer" autocomplete="off" value="#0F52BA"><br>
-                <input type="color" name="color4" class="search longer" autocomplete="off" value="#028A0F"><br>
+                {% for de_color in default_colors %}
+                    <input type="color" name={{ 'color' + (default_colors.index(de_color) + 1)|string }} class="search longer" autocomplete="off" value={{ de_color }}><br>
+                {% endfor %}
             {% else %}
                 {% for i in range(colours) %}
                     {% set color_id = "color" + ((i + 1)|string) %}
@@ -20,18 +19,42 @@ Home
             {% endif %}
             <button type="submit" class="add_color">Change color settings</button>
         </form>
-        <button id="add_btn" class="add_color">Add a color</button>
+        <button id="add_btn" class="add_color">+</button>
     </div>
     <div class="center_div">
-        <form action="/word_of_the_day" method="post">
-            <h5>{{ question }}</h5>
-            <ul></ul>
+        <form action="/wotd" method="post"> <!-- Word of the Day-->
+            {% if session["wotd_answer"]%}
+                <h5>{{ question }}</h5>
+                <ul id="wotd_opt">
+                    {% for option in options %}
+                        {% set opt_text = (options.index(option) + "A"|ord)|chr %}
+                        {% if opt_text == session["wotd_answer"] %}
+                            {% if not session["color1"] %}
+                                <tr><td class="opt"><span style="{{ "color:" + default_colors[range(1, 4)|random] + ";" }}" class="opt">({{ opt_text }}) {{ option }}</span></td></tr><br>
+                            {% else %}
+                                {% set session_color = (range(1, colours + 1)|random)|string %}
+                                <tr><td class="opt"><span style="{{ "color:" + session["color" + session_color] + ";" }}" class="opt">({{ opt_text }}) {{ option }}</span></td></tr><br>
+                            {% endif %}
+                        {% else %}
+                            <tr><td class="opt"><span class="opt">({{ opt_text }}) {{ option }}</span></td></tr><br>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <h5>{{ question }}</h5>
+                <ul id="wotd_opt">
+                    {% for option in options %}
+                        {% set opt_text = (options.index(option) + "A"|ord)|chr %}
+                        <tr><td><button type="submit" value={{ opt_text }} name="wotd_answer">({{ opt_text }}) {{ option }}</button></td></tr><br>
+                    {% endfor %}
+                </ul>
+            {% endif %}
         </form>
     </div>
     <footer id="license_footer">
         <details>
             <summary>License</summary>
-            <p>WordNet Release 3.0 This software and database is being provided to you, the LICENSEE, by Princeton University under the following license. By obtaining, using and/or copying this software and database, you agree that you have read, understood, and will comply with these terms and conditions.: Permission to use, copy, modify and distribute this software and database and its documentation for any purpose and without fee or royalty is hereby granted, provided that you agree to comply with the following copyright notice and statements, including the disclaimer, and that the same appear on ALL copies of the software, database and documentation, including modifications that you make for internal use or for distribution. WordNet 3.0 Copyright 2006 by Princeton University. All rights reserved. THIS SOFTWARE AND DATABASE IS PROVIDED "AS IS" AND PRINCETON UNIVERSITY MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED. BY WAY OF EXAMPLE, BUT NOT LIMITATION, PRINCETON UNIVERSITY MAKES NO REPRESENTATIONS OR WARRANTIES OF MERCHANT- ABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE LICENSED SOFTWARE, DATABASE OR DOCUMENTATION WILL NOT INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS. The name of Princeton University or Princeton may not be used in advertising or publicity pertaining to distribution of the software and/or database. Title to copyright in this software, database and any associated documentation shall at all times remain with Princeton University and LICENSEE agrees to preserve same.</p>
+            <p id="license">WordNet Release 3.0 This software and database is being provided to you, the LICENSEE, by Princeton University under the following license. By obtaining, using and/or copying this software and database, you agree that you have read, understood, and will comply with these terms and conditions.: Permission to use, copy, modify and distribute this software and database and its documentation for any purpose and without fee or royalty is hereby granted, provided that you agree to comply with the following copyright notice and statements, including the disclaimer, and that the same appear on ALL copies of the software, database and documentation, including modifications that you make for internal use or for distribution. WordNet 3.0 Copyright 2006 by Princeton University. All rights reserved. THIS SOFTWARE AND DATABASE IS PROVIDED "AS IS" AND PRINCETON UNIVERSITY MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED. BY WAY OF EXAMPLE, BUT NOT LIMITATION, PRINCETON UNIVERSITY MAKES NO REPRESENTATIONS OR WARRANTIES OF MERCHANT- ABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE LICENSED SOFTWARE, DATABASE OR DOCUMENTATION WILL NOT INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS. The name of Princeton University or Princeton may not be used in advertising or publicity pertaining to distribution of the software and/or database. Title to copyright in this software, database and any associated documentation shall at all times remain with Princeton University and LICENSEE agrees to preserve same.</p>
         </details>
     </footer>
     <script src="../static/index.js"></script>
