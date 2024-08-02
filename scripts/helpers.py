@@ -1,9 +1,7 @@
 from sqlite3 import *
 from datetime import datetime
-# from scripts.search import wotd_question
+from scripts.search import wotd_question
 
-db = connect("./dict.db", isolation_level=None)
-cur = db.cursor()
 
 def specified_color(is_syn, check_arg, default_colors, index, session):
     span_start = '<span style="color: '; span_end = ';">'
@@ -21,7 +19,19 @@ def specified_color(is_syn, check_arg, default_colors, index, session):
     else:
         return checks()        
 
-def wotd(): # Word of the Day
-    has_wotd = cur.execute("SELECT * FROM word_of_the_day WHERE date=?", [datetime.now().strftime("%Y-%m-%d")]).fetchall() == []
-    
-    print(has_wotd)
+def wotd_gen(): # Word of the Day
+    db = connect("./dict.db")
+    cur = db.cursor()
+
+    cur_day = datetime.now().strftime("%Y-%m-%d")
+    hasnt_wotd = cur.execute("SELECT * FROM wotd WHERE date=?", [cur_day]).fetchall() == []
+
+    if hasnt_wotd:
+        print("has not")
+        wotd_question()
+        wotd = cur.execute("SELECT * FROM wotd WHERE date=?", [cur_day]).fetchall()
+        return wotd[0]
+    else: 
+        print("has")
+        wotd = cur.execute("SELECT * FROM wotd WHERE date=?", [cur_day]).fetchall()
+        return wotd[0]

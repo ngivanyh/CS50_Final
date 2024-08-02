@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{{ word }}
+{% endblock %}
+
+{% block body %}
+    <div class="center_div">
+        <form action="/back" method="get">
+            <button type="submit">Back</button>
+        </form>
+    </div>
+    <div class="center_div">
+        <p id="word" class="text">{{ word }}</p><br>
+    </div>
+    <div class="center_div">
+        {{ msg|safe }}
+    </div>
+    <div class="center_div">
+        <details style="text-align: left;">
+            <summary>More about today's word</summary>
+            <div id="word-display">
+                <p id="word" class="text">{{ wotd_word }}</p>
+                <p id="pos">{{ pos|safe }}</p>
+                <p id="def" class="text detailedinfo"><p id="imp">Definition:</p> {{ definition|safe }}</p>
+                <p id="sentence" class="text detailedinfo"><p id="imp">Sentence:</p> {{ sentence|safe }}</p>
+                <p id="synonyms" class="text detailedinfo"><p id="imp">Synonyms:</p> {{ syn|safe }}</p>
+            </div>
+        </details>
+    </div>
+{% endblock %}

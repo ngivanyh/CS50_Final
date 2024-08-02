@@ -1,6 +1,7 @@
 from sqlite3 import *
 from random import randint, shuffle
 from re import findall, I, M
+from datetime import datetime
 
 '''WordNet Release 3.0 This software and database is being provided to you, the LICENSEE, by Princeton University under the following license. By obtaining, using and/or copying this software and database, you agree that you have read, understood, and will comply with these terms and conditions.: Permission to use, copy, modify and distribute this software and database and its documentation for any purpose and without fee or royalty is hereby granted, provided that you agree to comply with the following copyright notice and statements, including the disclaimer, and that the same appear on ALL copies of the software, database and documentation, including modifications that you make for internal use or for distribution. WordNet 3.0 Copyright 2006 by Princeton University. All rights reserved. THIS SOFTWARE AND DATABASE IS PROVIDED "AS IS" AND PRINCETON UNIVERSITY MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED. BY WAY OF EXAMPLE, BUT NOT LIMITATION, PRINCETON UNIVERSITY MAKES NO REPRESENTATIONS OR WARRANTIES OF MERCHANT- ABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE LICENSED SOFTWARE, DATABASE OR DOCUMENTATION WILL NOT INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS. The name of Princeton University or Princeton may not be used in advertising or publicity pertaining to distribution of the software and/or database. Title to copyright in this software, database and any associated documentation shall at all times remain with Princeton University and LICENSEE agrees to preserve same.'''
 
@@ -86,7 +87,7 @@ def wotd_question():
 
         return ans_list
 
-    db = connect("./dict.db")
+    db = connect("./dict.db", isolation_level=None)
     cur = db.cursor()
     global search_dbs
     q_type = search_dbs[randint(0, (len(search_dbs) - 1))]
@@ -106,7 +107,7 @@ def wotd_question():
         ans_list = get_opt(3, q_type, ans)
         shuffle(ans_list)
         print(ans_list)
-        q.update({"question": f"What is one of the synonyms for the word or phrase '{q_word[0]}'"})
+        q.update({"question": f'What is one of the synonyms for the word or phrase "{q_word[0]}"'})
 
         for i in range(len(ans_list)):
             ans_char = chr(ord("A") + i)
@@ -120,12 +121,16 @@ def wotd_question():
         ans_list = get_opt(3, q_type, ans)
 
         shuffle(ans_list)
-        q.update({"question": f"What is one of the meanings for the word or phrase '{q_word[0]}'?"})
+        q.update({"question": f'What is one of the meanings for the word or phrase "{q_word[0]}"?'})
 
         for i in range(len(ans_list)):
             ans_char = chr(ord("A") + i)
             q.update({ans_char: ans_list[i]})
 
         print(q)
-
-    return [q, ans_list.index(ans)]
+    
+    print(ans_list.index(ans))
+    date = datetime.now().strftime("%Y-%m-%d")
+    ans = chr(ord('A') + ans_list.index(ans))
+    cur.execute("INSERT INTO wotd (date, a, b, c, d, question, answer) VALUES (?, ?, ?, ?, ?, ?, ?);", [date, q['A'], q['B'], q['C'], q['D'], q['question'], ans])
+    print([date, q['A'], q['B'], q['C'], q['D'], q['question'], ans])
