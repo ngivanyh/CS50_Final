@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, session
-from scripts.search import get_word, check_none
+from scripts.search import get_word, check_none, opt_get
 from scripts.helpers import specified_color, wotd_gen
 from flask_session import Session
 from re import findall, M, I
@@ -11,7 +11,7 @@ DEFAULT_COLORS = ["#FFFFFF", "#D21404", "#0F52BA", "#028A0F"]
 app = Flask(__name__)
 
 app.jinja_env.filters["ord"] = ord # ord() function
-app.jinja_env.filters["chr"] = chr # ord() function
+app.jinja_env.filters["chr"] = chr # chr() function
 
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -120,13 +120,15 @@ def wotd():
     if (not usr_ans) or (usr_ans not in ["A", "B", "C", "D"]):
         return redirect("/")
     
-    db = connect("./dict.db", isolation_level=None)
+    db = connect("./dict.db")
     cur = db.cursor()
 
     usr_ans_type = usr_ans.lower() + '_ans'
     print(usr_ans_type)
     cur.execute(f"UPDATE wotd SET {usr_ans_type}=? WHERE date=?", [(cur.execute(f"SELECT {usr_ans_type} FROM wotd").fetchall()[0][0]) + 1, datetime.now().strftime("%Y-%m-%d")])
+    db.commit()
     cur.execute(f"UPDATE wotd SET total_ans=? WHERE date=?", [(cur.execute("SELECT total_ans FROM wotd").fetchall()[0][0]) + 1, datetime.now().strftime("%Y-%m-%d")])
+    db.commit()
     
     return redirect("/wotd_overview")
 
@@ -150,7 +152,9 @@ def wotd_overview():
     res = get_word(wotd_word)
     merge_res = merge(res)
     
-    return render_template("wotd.html", word=word, msg=msg, wotd_word=wotd_word, pos=merge_res[0], definition=merge_res[1], sentence=merge_res[2], syn=merge_res[3])
+    opts = opt_get()
+    
+    return render_template("wotd.html", word=word, msg=msg, wotd_word=wotd_word, pos=merge_res[0], definition=merge_res[1], sentence=merge_res[2], syn=merge_res[3], opts=opts)
 
 @app.route("/back")
 def back():

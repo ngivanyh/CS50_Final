@@ -81,13 +81,13 @@ def wotd_question():
         ans_list.append(ans)
         for _ in range(opt_cnt):
             temp = cur.execute(f"SELECT Word FROM {db_search_query};").fetchall()
-            temp = temp[randint(0, len(temp))][0]
+            temp = temp[randint(0, len(temp) - 1)][0]
             if temp not in ans_list:
                 ans_list.append(temp)
 
         return ans_list
 
-    db = connect("./dict.db", isolation_level=None)
+    db = connect("./dict.db")
     cur = db.cursor()
     global search_dbs
     q_type = search_dbs[randint(0, (len(search_dbs) - 1))]
@@ -132,5 +132,18 @@ def wotd_question():
     print(ans_list.index(ans))
     date = datetime.now().strftime("%Y-%m-%d")
     ans = chr(ord('A') + ans_list.index(ans))
-    cur.execute("INSERT INTO wotd (date, a, b, c, d, question, answer) VALUES (?, ?, ?, ?, ?, ?, ?);", [date, q['A'], q['B'], q['C'], q['D'], q['question'], ans])
+    try:
+        cur.execute("INSERT INTO wotd (date, a, b, c, d, question, answer) VALUES (?, ?, ?, ?, ?, ?, ?);", [date, q['A'], q['B'], q['C'], q['D'], q['question'], ans])
+        db.commit()
+    except IntegrityError:
+        pass        
     print([date, q['A'], q['B'], q['C'], q['D'], q['question'], ans])
+    
+def opt_get():
+    db = connect("./dict.db")
+    cur = db.cursor()
+    opts = []
+    for i in range(4):
+        opt = cur.execute(f"SELECT {chr(ord('a') + 1) + '_ans'} FROM wotd WHERE date=?;", [datetime.now().strftime("%Y-%m-%d")]).fetchall()[0][0]
+        opts.append(opt)
+    return opts
