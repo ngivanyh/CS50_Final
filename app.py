@@ -1,21 +1,23 @@
 from flask import Flask, render_template, request, redirect, session
-from scripts.search import get_word, check_none
+from scripts.search import get_word, check_none, search_dbs
 from scripts.helpers import specified_color, wotd_gen
 from flask_session import Session
 from re import findall, M, I
 from sqlite3 import *
 from datetime import datetime
+from flask_cors import CORS
 
 DEFAULT_COLORS = ["#FFFFFF", "#D21404", "#0F52BA", "#028A0F"]
 
 app = Flask(__name__)
 
 app.jinja_env.filters["ord"] = ord # ord() function
-app.jinja_env.filters["chr"] = chr # ord() function
+app.jinja_env.filters["chr"] = chr # chr() function
 
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+CORS(app)
 
 def merge(word_dict):
     global DEFAULT_COLORS
@@ -120,13 +122,15 @@ def wotd():
     if (not usr_ans) or (usr_ans not in ["A", "B", "C", "D"]):
         return redirect("/")
     
-    db = connect("./dict.db", isolation_level=None)
+    db = connect("./dict.db")
     cur = db.cursor()
 
     usr_ans_type = usr_ans.lower() + '_ans'
     print(usr_ans_type)
     cur.execute(f"UPDATE wotd SET {usr_ans_type}=? WHERE date=?", [(cur.execute(f"SELECT {usr_ans_type} FROM wotd").fetchall()[0][0]) + 1, datetime.now().strftime("%Y-%m-%d")])
+    db.commit()
     cur.execute(f"UPDATE wotd SET total_ans=? WHERE date=?", [(cur.execute("SELECT total_ans FROM wotd").fetchall()[0][0]) + 1, datetime.now().strftime("%Y-%m-%d")])
+    db.commit()
     
     return redirect("/wotd_overview")
 
@@ -149,9 +153,24 @@ def wotd_overview():
     
     res = get_word(wotd_word)
     merge_res = merge(res)
-    
+        
     return render_template("wotd.html", word=word, msg=msg, wotd_word=wotd_word, pos=merge_res[0], definition=merge_res[1], sentence=merge_res[2], syn=merge_res[3])
 
 @app.route("/back")
 def back():
     return redirect("/")
+
+@app.route("/autocomplete", methods=["POST"])
+def autocomplete():
+    query = request.get_json()["query"]
+    db = connect("./dict.db")
+    cur = db.cursor()
+    possible_words = []
+    
+    for i in range(len(search_dbs)): 
+        temp = cur.execute(f'SELECT Word FROM {search_dbs[i]} WHERE Word LIKE ? ORDER BY Word ASC;', ["%" + query + "%"]).fetchall()
+        for item in temp:
+            possible_words.append(item[0])
+    print(possible_words)
+    possible_words = list(set(possible_words))
+    return possible_words[:20]

@@ -1,7 +1,7 @@
 from sqlite3 import *
 from datetime import datetime
 from scripts.search import wotd_question
-
+from app import session
 
 def specified_color(is_syn, check_arg, default_colors, index, session):
     span_start = '<span style="color: '; span_end = ';">'
@@ -28,6 +28,10 @@ def wotd_gen(): # Word of the Day
 
     if hasnt_wotd:
         print("has not")
+        if "wotd_answer" in session:
+            print("ehhh")
+            session["wotd_answer"] = ""
+        print(session["wotd_answer"])
         wotd_question()
         wotd = cur.execute("SELECT * FROM wotd WHERE date=?", [cur_day]).fetchall()
         return wotd[0]

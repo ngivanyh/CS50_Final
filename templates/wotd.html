@@ -17,9 +17,9 @@
         {{ msg|safe }}
     </div>
     <div class="center_div">
-        <details style="text-align: left;">
+        <details>
             <summary>More about today's word</summary>
-            <div id="word-display">
+            <div id="word-display" style="text-align: left;">
                 <p id="word" class="text">{{ wotd_word }}</p>
                 <p id="pos">{{ pos|safe }}</p>
                 <p id="def" class="text detailedinfo"><p id="imp">Definition:</p> {{ definition|safe }}</p>

@@ -14,8 +14,10 @@
         <form action="/word" method="post" id="word_form">
             <input id="search" class="search" placeholder="Word" name="word" autocomplete="off" autofocus>
             <button type="submit" class="submit_btn">Search</button>
+            <ul id="options"></ul>
         </form>
     </div>
     {% block body %}{% endblock %}
+    <script src="static/search.js"></script>
 </body>
 </html>
