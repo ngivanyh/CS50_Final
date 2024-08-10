@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, redirect, session
-from scripts.search import get_word, check_none, opt_get
+from scripts.search import get_word, check_none, search_dbs
 from scripts.helpers import specified_color, wotd_gen
 from flask_session import Session
 from re import findall, M, I
 from sqlite3 import *
 from datetime import datetime
+from flask_cors import CORS
 
 DEFAULT_COLORS = ["#FFFFFF", "#D21404", "#0F52BA", "#028A0F"]
 
@@ -16,6 +17,7 @@ app.jinja_env.filters["chr"] = chr # chr() function
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+CORS(app)
 
 def merge(word_dict):
     global DEFAULT_COLORS
@@ -151,11 +153,24 @@ def wotd_overview():
     
     res = get_word(wotd_word)
     merge_res = merge(res)
-    
-    opts = opt_get()
-    
-    return render_template("wotd.html", word=word, msg=msg, wotd_word=wotd_word, pos=merge_res[0], definition=merge_res[1], sentence=merge_res[2], syn=merge_res[3], opts=opts)
+        
+    return render_template("wotd.html", word=word, msg=msg, wotd_word=wotd_word, pos=merge_res[0], definition=merge_res[1], sentence=merge_res[2], syn=merge_res[3])
 
 @app.route("/back")
 def back():
     return redirect("/")
+
+@app.route("/autocomplete", methods=["POST"])
+def autocomplete():
+    query = request.get_json()["query"]
+    db = connect("./dict.db")
+    cur = db.cursor()
+    possible_words = []
+    
+    for i in range(len(search_dbs)): 
+        temp = cur.execute(f'SELECT Word FROM {search_dbs[i]} WHERE Word LIKE ? ORDER BY Word ASC;', ["%" + query + "%"]).fetchall()
+        for item in temp:
+            possible_words.append(item[0])
+    print(possible_words)
+    possible_words = list(set(possible_words))
+    return possible_words[:20]

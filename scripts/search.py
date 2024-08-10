@@ -138,12 +138,3 @@ def wotd_question():
     except IntegrityError:
         pass        
     print([date, q['A'], q['B'], q['C'], q['D'], q['question'], ans])
-    
-def opt_get():
-    db = connect("./dict.db")
-    cur = db.cursor()
-    opts = []
-    for i in range(4):
-        opt = cur.execute(f"SELECT {chr(ord('a') + 1) + '_ans'} FROM wotd WHERE date=?;", [datetime.now().strftime("%Y-%m-%d")]).fetchall()[0][0]
-        opts.append(opt)
-    return opts
