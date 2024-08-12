@@ -31,7 +31,6 @@ def wotd_gen(): # Word of the Day
         if "wotd_answer" in session:
             print("ehhh")
             session["wotd_answer"] = ""
-        print(session["wotd_answer"])
         wotd_question()
         wotd = cur.execute("SELECT * FROM wotd WHERE date=?", [cur_day]).fetchall()
         return wotd[0]
